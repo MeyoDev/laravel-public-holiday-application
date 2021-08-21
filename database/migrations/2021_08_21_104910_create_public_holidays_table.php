@@ -22,7 +22,6 @@ class CreatePublicHolidaysTable extends Migration
             $table->integer('ph_day_of_week');
             $table->timestamps();
 
-            $table->primary('id');
             $table->index(['id', 'ph_name', 'ph_year']);
         });
     }
