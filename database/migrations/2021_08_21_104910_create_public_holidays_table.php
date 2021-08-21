@@ -15,13 +15,13 @@ class CreatePublicHolidaysTable extends Migration
     {
         Schema::create('public_holidays', function (Blueprint $table) {
             $table->id();
-            $table->string("ph_name");
-            $table->integer("ph_day");
-            $table->integer("ph_month");
-            $table->integer("ph_year");
-            $table->integer("ph_day_of_week");
+            $table->string('ph_name');
+            $table->integer('ph_day');
+            $table->integer('ph_month');
+            $table->integer('ph_year');
+            $table->integer('ph_day_of_week');
             $table->timestamps();
-            
+
             $table->primary('id');
             $table->index(['id', 'ph_name', 'ph_year']);
         });
