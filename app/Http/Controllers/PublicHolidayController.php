@@ -2,51 +2,36 @@
 
 namespace App\Http\Controllers;
 
-use App\Console\Commands\RequestHolidays;
-use App\Models\PulicHoliday;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
+use App\Exceptions\PublicHolidayExceptionHandler;
+use App\Services\PublicHolidayService;
 
 class PublicHolidayController extends Controller
 {
-    /**
-     *
-     * @param  int  $year
-     * @return \Illuminate\View\View
-     */
-    public function getHolidays(int $year)
+    /** @var PublicHolidayService */
+    private $publicHolidayService;
+
+    public function __construct(PublicHolidayService $publicHolidayService)
     {
-        $request = new RequestHolidays();
-        $response = $request->handle($year);
-
-        $holidays = json_decode($response->getBody()->getContents(), true);
-
-        $this->saveHolidays($holidays);
-
-        return view('holidays', [
-            'public_holidays' => $holidays
-        ]);
+        $this->publicHolidayService = $publicHolidayService;
     }
 
     /**
      *
-     * @param  array  $publicHolidays
-     * @return void
+     * @param int $year
+     * @return \Illuminate\View\View
      */
-    private function saveHolidays(array $publicHolidays) : void
+    public function getHolidays(int $year)
     {
-        foreach($publicHolidays as $holiday){
-            $uniqueIdentifierHash = md5(json_encode($holiday["date"]));
+        $holidays = $this->publicHolidayService->requestHolidays($year);
 
-            PulicHoliday::insertOrIgnore([
-                'ph_name' => $holiday["name"][0]["text"],
-                'ph_day' => $holiday["date"]["day"],
-                'ph_month' => $holiday["date"]["month"],
-                'ph_year' => $holiday["date"]["year"],
-                'ph_day_of_week' => $holiday["date"]["dayOfWeek"],
-                'ph_hash' => $uniqueIdentifierHash,
-                'created_at' => Carbon::now()
-            ]);
+        if (array_key_exists("error", $holidays)) {
+            return PublicHolidayExceptionHandler::badRequest($holidays["error"]);
         }
+
+        $this->publicHolidayService->saveHolidays($holidays);
+
+        return view('holidays', [
+            'public_holidays' => $holidays
+        ]);
     }
 }
