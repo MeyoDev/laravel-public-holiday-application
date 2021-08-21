@@ -16,6 +16,7 @@ class PulicHoliday extends Model
         'ph_day',
         'ph_month',
         'ph_year',
-        'ph_day_of_week'
+        'ph_day_of_week',
+        'ph_hash'
     ];
 }
