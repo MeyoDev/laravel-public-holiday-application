@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Exceptions\PublicHolidayExceptionHandler;
 use App\Console\Commands\RequestHolidays;
 use App\Models\PulicHoliday;
 use Carbon\Carbon;
@@ -21,11 +20,9 @@ class PublicHolidayService
 
         $holidays = json_decode($response->getBody()->getContents(), true);
 
-        if (array_key_exists("error", $holidays)) {
-            return PublicHolidayExceptionHandler::badRequest($holidays["error"]);
+        if (!array_key_exists("error", $holidays)) {
+            $this->saveHolidays($holidays);
         }
-
-        $this->saveHolidays($holidays);
 
         return $holidays;
     }

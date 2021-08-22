@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\PublicHolidayExceptionHandler;
 use App\Services\PublicHolidayService;
 
 class PublicHolidayController extends Controller
@@ -21,10 +22,14 @@ class PublicHolidayController extends Controller
      */
     public function getHolidays(int $year)
     {
-        $holidays = $this->publicHolidayService->requestHolidays($year);
+        $response = $this->publicHolidayService->requestHolidays($year);
+
+        if (array_key_exists("error", $response)){
+            return PublicHolidayExceptionHandler::badRequest($response["error"]);
+        }
 
         return view('holidays', [
-            'public_holidays' => $holidays
+            'public_holidays' => $response
         ]);
     }
 }
