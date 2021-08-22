@@ -22,7 +22,7 @@
                                 <h5 class="card-title">Public Holidays - {{ $year }}</h5>
                             </div>
                             <div class="col-sm-6 text-end">
-                                <a href="/holidays/download/{{$year}}" class="text-primary" target="_blank">
+                                <a href="{{ URL::to('/holidays/download/' . $year) }}" class="text-primary">
                                     Download as PDF
                                 </a>
                             </div>

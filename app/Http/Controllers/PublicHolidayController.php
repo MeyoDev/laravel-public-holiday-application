@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\PublicHolidayExceptionHandler;
 use App\Services\PublicHolidayService;
-use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade as PDF;
 
 class PublicHolidayController extends Controller
 {
@@ -33,5 +33,29 @@ class PublicHolidayController extends Controller
             'public_holidays' => $response,
             'year' => $year
         ]);
+    }
+
+    /**
+     *
+     * @param int $year
+     * @return \Illuminate\View\View
+     */
+    public function downloadHolidaysPDF(int $year)
+    {
+        $response = $this->publicHolidayService->getHolidaysByYear($year);
+
+        if (empty($response)) {
+            $message = "Public holiday data unavailable for your request";
+
+            return PublicHolidayExceptionHandler::badRequest($message);
+        }
+
+
+        $pdf = PDF::loadView('pdf.holidays', [
+            'public_holidays' => $response,
+            'year' => $year
+        ]);
+
+        return $pdf->download('public_holidays_' . $year . '.pdf');
     }
 }

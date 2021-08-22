@@ -20,4 +20,8 @@ Route::get('/', function () {
 
 Route::get('/holidays/{year}', [
     PublicHolidayController::class, 'getHolidays'
-])->where('year', '[0-9]+');;
+])->where('year', '[0-9]+');
+
+Route::get('/holidays/download/{year}', [
+    PublicHolidayController::class, 'downloadHolidaysPDF'
+])->where('year', '[0-9]+');

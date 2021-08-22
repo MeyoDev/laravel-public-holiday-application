@@ -15,18 +15,46 @@ class PublicHolidayService
      */
     public function requestHolidays(int $year) : array
     {
-        $request = new RequestHolidays();
-        $response = $request->handle($year);
 
-        $holidays = json_decode($response->getBody()->getContents(), true);
+        $holidays = $this->getHolidaysFromDBbyYear($year);
 
-        if (!array_key_exists("error", $holidays)) {
-            $this->saveHolidays($holidays);
+        if (empty($holidays)) {
+            $request = new RequestHolidays();
+            $response = $request->handle($year);
 
-            $holidays = PublicHoliday::where('ph_year', $year)->get()->toArray();
+            $holidays = json_decode($response->getBody()->getContents(), true);
+
+            if (!array_key_exists("error", $holidays)) {
+                $this->saveHolidays($holidays);
+
+                $holidays = $this->getHolidaysFromDBbyYear($year);
+            }
         }
 
         return $holidays;
+    }
+
+    /**
+     *
+     * @param  int  $year
+     * @return array
+     */
+    public function getHolidaysByYear(int $year) : array
+    {
+        return $this->getHolidaysFromDBbyYear($year);
+    }
+
+    /**
+     *
+     * @param  int  $year
+     * @return array
+     */
+    private function getHolidaysFromDBbyYear(int $year) : array
+    {
+        return PublicHoliday::select('ph_name', 'ph_day', 'ph_month', 'ph_year', 'ph_day_of_week')
+                ->where('ph_year', $year)
+                ->get()
+                ->toArray();
     }
 
     /**
