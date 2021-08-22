@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\PublicHolidayExceptionHandler;
 use App\Services\PublicHolidayService;
+use Carbon\Carbon;
 
 class PublicHolidayController extends Controller
 {
@@ -29,7 +30,8 @@ class PublicHolidayController extends Controller
         }
 
         return view('holidays', [
-            'public_holidays' => $response
+            'public_holidays' => $response,
+            'year' => $year
         ]);
     }
 }

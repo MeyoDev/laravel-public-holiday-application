@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Console\Commands\RequestHolidays;
-use App\Models\PulicHoliday;
+use App\Models\PublicHoliday;
 use Carbon\Carbon;
 
 class PublicHolidayService
@@ -22,6 +22,8 @@ class PublicHolidayService
 
         if (!array_key_exists("error", $holidays)) {
             $this->saveHolidays($holidays);
+
+            $holidays = PublicHoliday::where('ph_year', $year)->get()->toArray();
         }
 
         return $holidays;
@@ -37,15 +39,35 @@ class PublicHolidayService
         foreach($publicHolidays as $holiday){
             $uniqueIdentifierHash = md5(json_encode($holiday["date"]));
 
-            PulicHoliday::insertOrIgnore([
+            PublicHoliday::insertOrIgnore([
                 'ph_name' => $holiday["name"][0]["text"],
                 'ph_day' => $holiday["date"]["day"],
                 'ph_month' => $holiday["date"]["month"],
                 'ph_year' => $holiday["date"]["year"],
-                'ph_day_of_week' => $holiday["date"]["dayOfWeek"],
+                'ph_day_of_week' => $this->getWeekDay($holiday["date"]["dayOfWeek"]),
                 'ph_hash' => $uniqueIdentifierHash,
                 'created_at' => Carbon::now()
             ]);
         }
+    }
+
+    /**
+     *
+     * @param  int  $day
+     * @return string
+     */
+    private function getWeekDay(int $day) : string
+    {
+        $weekdays = [
+            'Monday',
+            'Tuesday',
+            'Wednesday',
+            'Thursday',
+            'Friday',
+            'Saturday',
+            'Sunday'
+        ];
+
+        return $weekdays[$day - 1];
     }
 }

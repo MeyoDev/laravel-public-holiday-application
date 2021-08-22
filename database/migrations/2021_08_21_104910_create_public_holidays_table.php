@@ -19,7 +19,7 @@ class CreatePublicHolidaysTable extends Migration
             $table->integer('ph_day');
             $table->integer('ph_month');
             $table->integer('ph_year');
-            $table->integer('ph_day_of_week');
+            $table->string('ph_day_of_week');
             $table->string('ph_hash')->unique();
             $table->timestamps();
 
